@@ -24,20 +24,24 @@ Generate self-signed certs:
 ```openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -nodes -keyout network.local.key -out network.local.pem -subj "/CN=network.local" -addext "subjectAltName=DNS:network.local"```
 
 Get SHA-256:
+
 ```openssl x509 -noout -fingerprint -sha256 -inform pem -in network.local.pem | tr -d :```
 
 Run docker build:
+
 ```docker build . -t cloudflare-beacon```
 
 By default this container is listening on port 80 & 443.  Port 80 isn't required to be open to the WARP client, and you can expose the container on any port (depends on how you're deploying this image) mapped to 443.
 
 Run the container:
+
 ```docker run -d -p 8443:443 cloudflare-beacon```
 
 Now you should be able to curl and validate the server is up.  Add the --insecure flag to ignore the self-signed (untrusted) cert:
+
 ```curl https://someLocalIP:8443 --insecure```
 
-Follow steps here to configure a managed network with the SHA-256 we generated before, and the local LAN IP & port you deployed the container to: https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/configure-warp/managed-networks
+[Follow steps here](https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/warp/configure-warp/managed-networks) to configure a managed network with the SHA-256 we generated before, and the local LAN IP & port you deployed the container to: 
 
 Make sure the IP isn't a host running other containers you want on your split tunnel.  Zero Trust will exclude the IP from split tunnel configs by default.
 
